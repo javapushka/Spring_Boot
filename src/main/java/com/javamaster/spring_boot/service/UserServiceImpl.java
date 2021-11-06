@@ -1,6 +1,6 @@
 package com.javamaster.spring_boot.service;
 
-import com.javamaster.spring_boot.config.dao.UserDao;
+import com.javamaster.spring_boot.dao.UserDao;
 import com.javamaster.spring_boot.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
