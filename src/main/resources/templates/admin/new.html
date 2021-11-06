@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://xmlns.jcp.org/jsf/html">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New User</title>
+</head>
+<body>
+<form th:method="POST" th:action="@{/admin}" th:object="${new_user}">
+    <label for="name"> Enter name:</label>
+    <input type="text" th:field="*{name}" id="name"/>
+    <br/>
+    <label for="age">Enter age:</label>
+    <input type="text" th:field="*{age}" id="age"/>
+    <br/>
+    <label for="password">Enter password:</label>
+    <input type="text" th:field="*{password}" id="password"/>
+    <br/>
+
+    <div th:align="left">
+        <p><b>Choose role(s)</b></p>
+        ADMIN: <input type="checkbox" name="isAdmin"
+                      th:checked="${isAdmin}"><br>
+        USER: <input type="checkbox" name="isUser"
+                     th:checked="${isUser}"><br>
+    </div>
+
+    <br/>
+    <input type="submit" value="ADD NEW USER"/>
+</form>
+
+<br/>
+<hr/>
+<a href="/admin">Go to the List of Users</a>
+<br/>
+<br/>
+<div>
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Logout"/>
+    </form>
+</div>
+<hr/>
+</body>
+</html>
