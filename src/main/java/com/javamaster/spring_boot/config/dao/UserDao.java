@@ -1,11 +1,11 @@
-package com.javamaster.spring_boot.service;
+package com.javamaster.spring_boot.config.dao;
 
 import com.javamaster.spring_boot.entity.User;
 
 import javax.xml.bind.ValidationException;
 import java.util.List;
 
-public interface UserService {
+public interface UserDao {
 
     List<User> findAll();
 
