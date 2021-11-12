@@ -1,5 +1,6 @@
 package com.javamaster.spring_boot.service;
 
+import com.javamaster.spring_boot.entity.Role;
 import com.javamaster.spring_boot.entity.User;
 
 import javax.xml.bind.ValidationException;
@@ -17,5 +18,7 @@ public interface UserService {
 
     void deleteUser(Integer userId);
 
-    User findByName(String name);
+    User findUserByEmail(String email);
+
+    Role getRoleById(Integer id);
 }

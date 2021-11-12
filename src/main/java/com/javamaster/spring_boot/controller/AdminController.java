@@ -4,7 +4,7 @@ import com.javamaster.spring_boot.entity.Role;
 import com.javamaster.spring_boot.entity.User;
 import com.javamaster.spring_boot.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,45 +15,58 @@ import java.util.Set;
 @Controller
 @RequestMapping("/admin")
 @AllArgsConstructor
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
 
     private final UserService userService;
 
-
     @GetMapping()
-    public String index(Model model) {
-        model.addAttribute("all_users", userService.findAll());
-        return "admin/index";
+    public String listOfUsers(Model model) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        model.addAttribute("oneUser", user);
+
+        Iterable<User> userIterable = userService.findAll();
+        model.addAttribute("listUsers", userIterable);
+        return "admin/adminPage";
     }
 
-    @GetMapping("/new")
-    public String newUser(@ModelAttribute("new_user") User user) {
-        return "admin/new";
+    @PostMapping("/delete")
+    public String deleteUser(@ModelAttribute("user") User user) {
+        userService.deleteUser(user.getId());
+        return "redirect:/admin";
     }
 
-    @PostMapping()
-    public String create(@RequestParam(name = "isAdmin", required = false) boolean isAdmin,
-                         @RequestParam(name = "isUser", required = false) boolean isUser,
-                         @ModelAttribute User user) throws Exception {
-        Set<Role> rolesToAdd = new HashSet<>();
+    @PostMapping("/new")
+    public String create(@ModelAttribute("user") User user,
+                         @RequestParam(name = "role", required = false) String role) throws Exception {
+        Set<Role> rolesForNewUser = new HashSet<>();
+        rolesForNewUser.add(userService.getRoleById(2)); //add role of USER
 
-        if (userService.findByName(user.getName()) != null) {
+        if ((role != null) && (role.equals("admin"))) {
+            rolesForNewUser.add(userService.getRoleById(1));
+        }
+
+        if (userService.findUserByEmail(user.getEmail()) != null) {
             throw new Exception("======================User exists!======================");
         }
-        if (isUser) {
-            rolesToAdd.add(new Role(2, "ROLE_USER"));
-        }
-        if (isAdmin) {
-            rolesToAdd.add(new Role(1, "ROLE_ADMIN"));
-        }
 
-        if (rolesToAdd.isEmpty()) {
-            throw new Exception("=================The role of the new user is not assigned!=================");
-        }
-
-        user.setRoles(rolesToAdd);
+        user.setRoles(rolesForNewUser);
         userService.saveUser(user);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String update(@ModelAttribute("user") User user,
+                         @RequestParam(name = "role", required = false) String role) throws Exception {
+        Set<Role> rolesForUser = new HashSet<>();
+        rolesForUser.add(userService.getRoleById(2)); //add role of USER
+
+        if ((role != null) && (role.equals("admin"))) {
+            rolesForUser.add(userService.getRoleById(1));
+        }
+
+
+        user.setRoles(rolesForUser);
+        userService.updateUser(user.getId(), user);
         return "redirect:/admin";
     }
 }

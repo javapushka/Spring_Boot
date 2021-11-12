@@ -1,5 +1,6 @@
 package com.javamaster.spring_boot.dao;
 
+import com.javamaster.spring_boot.entity.Role;
 import com.javamaster.spring_boot.entity.User;
 import com.javamaster.spring_boot.repository.RoleRepository;
 import com.javamaster.spring_boot.repository.UserRepository;
@@ -18,6 +19,7 @@ public class UserDaoImp implements UserDao {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
+
     @Override
     public List<User> findAll() {
         return userRepository.findAll();
@@ -35,8 +37,10 @@ public class UserDaoImp implements UserDao {
         validateUser(user);
         User saveUser = new User();
         saveUser.setId(user.getId());
+        saveUser.setEmail(user.getEmail());
+        saveUser.setFirstName(user.getFirstName());
+        saveUser.setLastName(user.getLastName());
         saveUser.setAge(user.getAge());
-        saveUser.setName(user.getName());
         saveUser.setPassword(user.getPassword());
         saveUser.setRoles(user.getRoles());
         validateUser(saveUser);
@@ -44,13 +48,14 @@ public class UserDaoImp implements UserDao {
     }
 
     @Override
-    public void updateUser(Integer id, User user) throws ValidationException {
+    public void updateUser(Integer id, User user) {
         User userFromDb = userRepository.getById(id);
+        userFromDb.setEmail(user.getEmail());
+        userFromDb.setFirstName(user.getFirstName());
+        userFromDb.setLastName(user.getLastName());
         userFromDb.setAge(user.getAge());
-        userFromDb.setName(user.getName());
         userFromDb.setPassword(user.getPassword());
         userFromDb.setRoles(user.getRoles());
-        validateUser(userFromDb);
         userRepository.save(userFromDb);
 
     }
@@ -61,10 +66,19 @@ public class UserDaoImp implements UserDao {
     }
 
     @Override
-    public User findByName(String name) {
-        User user = userRepository.findByName(name);
+    public User findUserByEmail(String email) {
+        User user = userRepository.findUserByEmail(email);
         if (user != null) {
             return user;
+        }
+        return null;
+    }
+
+    @Override
+    public Role getRoleById(Integer id) {
+        Role role = roleRepository.findRoleById(id);
+        if (role != null) {
+            return role;
         }
         return null;
     }
@@ -73,13 +87,19 @@ public class UserDaoImp implements UserDao {
         if (isNull(user)) {
             throw new ValidationException("Object user is null!");
         }
-        if (isNull(user.getName()) || user.getName().isEmpty()) {
-            throw new ValidationException("Name is empty!");
+        if (isNull(user.getEmail()) || user.getEmail().isEmpty()) {
+            throw new ValidationException("Email is empty!");
+        }
+        if (isNull(user.getFirstName()) || user.getFirstName().isEmpty()) {
+            throw new ValidationException("Firstname is empty!");
+        }
+        if (isNull(user.getLastName()) || user.getLastName().isEmpty()) {
+            throw new ValidationException("Lastname is empty!");
         }
         if (isNull(user.getPassword()) || user.getPassword().isEmpty()) {
             throw new ValidationException("Password is empty!");
         }
-        if (isNull(user.getAge()) || user.getAge().isEmpty()) {
+        if (isNull(user.getAge()) || (user.getAge() == null) ) {
             throw new ValidationException("Age is empty!");
         }
         if (isNull(user.getRoles()) || user.getRoles().isEmpty()) {

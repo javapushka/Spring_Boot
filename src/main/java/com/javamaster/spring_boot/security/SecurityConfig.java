@@ -17,7 +17,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService; // сервис, с помощью которого тащим пользователя
@@ -37,8 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // http.csrf().disable(); - попробуйте выяснить сами, что это даёт
         http.authorizeRequests()
-                .antMatchers("/admin/**").access("hasAnyAuthority('ADMIN')")// разрешаем входить на /user пользователям с ролью User
-                .antMatchers("/user/{id}").access("hasAnyAuthority('ADMIN') or @userController.hasUserId(authentication, #id)")
+                .antMatchers("/admin/**").access("hasAuthority('ADMIN')")// разрешаем входить на /user пользователям с ролью User
+                .antMatchers("/user/").access("hasAnyAuthority('ADMIN', 'USER')")
                 .anyRequest().authenticated()
                 .and().formLogin().permitAll()  // Spring сам подставит свою логин форму
                 .successHandler(loginSuccessHandler); // подключаем наш SuccessHandler для перенаправления по ролям

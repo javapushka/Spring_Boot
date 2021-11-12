@@ -1,6 +1,7 @@
 package com.javamaster.spring_boot.service;
 
 import com.javamaster.spring_boot.dao.UserDao;
+import com.javamaster.spring_boot.entity.Role;
 import com.javamaster.spring_boot.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,12 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public User findByName(String name) {
-        return userDao.findByName(name);
+    public User findUserByEmail(String email) {
+        return userDao.findUserByEmail(email);
+    }
+
+    @Override
+    public Role getRoleById(Integer id) {
+        return userDao.getRoleById(id);
     }
 }
