@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.xml.bind.ValidationException;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
@@ -27,7 +28,11 @@ public class UserDaoImp implements UserDao {
 
     @Override
     public User findById(Integer userId) throws ValidationException {
-        User user = userRepository.getById(userId);
+        User user = null;
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            user = userOptional.get();
+        }
         validateUser(user);
         return user;
     }
@@ -35,29 +40,13 @@ public class UserDaoImp implements UserDao {
     @Override
     public void saveUser(User user) throws ValidationException {
         validateUser(user);
-        User saveUser = new User();
-        saveUser.setId(user.getId());
-        saveUser.setEmail(user.getEmail());
-        saveUser.setFirstName(user.getFirstName());
-        saveUser.setLastName(user.getLastName());
-        saveUser.setAge(user.getAge());
-        saveUser.setPassword(user.getPassword());
-        saveUser.setRoles(user.getRoles());
-        validateUser(saveUser);
-        userRepository.save(saveUser);
+        userRepository.save(user);
     }
 
     @Override
-    public void updateUser(Integer id, User user) {
-        User userFromDb = userRepository.getById(id);
-        userFromDb.setEmail(user.getEmail());
-        userFromDb.setFirstName(user.getFirstName());
-        userFromDb.setLastName(user.getLastName());
-        userFromDb.setAge(user.getAge());
-        userFromDb.setPassword(user.getPassword());
-        userFromDb.setRoles(user.getRoles());
-        userRepository.save(userFromDb);
-
+    public void updateUser(User user) throws ValidationException {
+        validateUser(user);
+        userRepository.save(user);
     }
 
     @Override
@@ -99,7 +88,7 @@ public class UserDaoImp implements UserDao {
         if (isNull(user.getPassword()) || user.getPassword().isEmpty()) {
             throw new ValidationException("Password is empty!");
         }
-        if (isNull(user.getAge()) || (user.getAge() == null) ) {
+        if (isNull(user.getAge()) || (user.getAge() == null)) {
             throw new ValidationException("Age is empty!");
         }
         if (isNull(user.getRoles()) || user.getRoles().isEmpty()) {

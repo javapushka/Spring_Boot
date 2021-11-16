@@ -31,8 +31,8 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public void updateUser(Integer id, User user) throws ValidationException {
-        userDao.updateUser(id, user);
+    public void updateUser(User user) throws ValidationException {
+        userDao.updateUser(user);
     }
 
     @Override

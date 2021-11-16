@@ -14,7 +14,7 @@ public interface UserService {
 
     void saveUser(User user) throws ValidationException;
 
-    void updateUser(Integer id, User user) throws ValidationException;
+    void updateUser(User user) throws ValidationException;
 
     void deleteUser(Integer userId);
 
