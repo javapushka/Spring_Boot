@@ -30,47 +30,53 @@ public class AdminRestController {
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
-    @GetMapping("/infoAdmin")
-    public ResponseEntity<User> infoAdmin() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<>(user,HttpStatus.OK);
+    @GetMapping("/getUser/{id}")
+    public ResponseEntity<User> getCurrentUser(@PathVariable("id") int id) throws ValidationException {
+        User user = userService.findById(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+
     @PostMapping("/new")
-    public ResponseEntity<User> addNewUser(@RequestBody User user) throws ValidationException {
+    public ResponseEntity<User> addNewUser(@RequestBody User user) throws Exception {
         Set<Role> rolesForNewUser = new HashSet<>();
         rolesForNewUser.add(userService.getRoleById(2)); //add role of USER
 
-        if(!(isNull(user.getRoles()) || user.getRoles().isEmpty())){
-            if(user.getRoles().iterator().next().getRole().contains("ADMIN")) {
+        if (userService.findUserByEmail(user.getEmail()) != null) {
+            throw new Exception("======================User exists!======================");
+        }
+
+        if (!(isNull(user.getRoles()) || user.getRoles().isEmpty())) {
+            if (user.getRoles().iterator().next().getRole().contains("ADMIN")) {
                 rolesForNewUser.add(userService.getRoleById(1));
             }
         }
 
         user.setRoles(rolesForNewUser);
         userService.saveUser(user);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
-    @PutMapping("/edit")
-    public ResponseEntity<User> editUser(@RequestBody User user) throws ValidationException {
-        Set<Role> rolesForNewUser = new HashSet<>();
-        rolesForNewUser.add(userService.getRoleById(2));
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<User> editUser(@RequestBody User user,
+                                         @PathVariable("id") int id) throws ValidationException {
+        Set<Role> rolesForUser = new HashSet<>();
+        rolesForUser.add(userService.getRoleById(2));
 
-        if(!(isNull(user.getRoles()) || user.getRoles().isEmpty())){
-            if(user.getRoles().iterator().next().getRole().contains("ADMIN")) {
-                rolesForNewUser.add(userService.getRoleById(1));
+        if (!(isNull(user.getRoles()) || user.getRoles().isEmpty())) {
+            if (user.getRoles().iterator().next().getRole().contains("ADMIN")) {
+                rolesForUser.add(userService.getRoleById(1));
             }
         }
 
-        user.setRoles(rolesForNewUser);
-        userService.updateUser(user);
-        return new ResponseEntity<>(HttpStatus.OK);
+        user.setRoles(rolesForUser);
+        userService.updateUser(id, user);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<User> deleteUser(@RequestBody User user) {
-        userService.deleteUser(user.getId());
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<User> deleteUser(@PathVariable("id") int id) {
+        userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

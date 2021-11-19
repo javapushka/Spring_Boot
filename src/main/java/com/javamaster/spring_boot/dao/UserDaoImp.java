@@ -44,7 +44,11 @@ public class UserDaoImp implements UserDao {
     }
 
     @Override
-    public void updateUser(User user) throws ValidationException {
+    public void updateUser(Integer id, User user) throws ValidationException {
+        User userFromDb = userRepository.getById(id);
+        if (isNull(user.getPassword()) || user.getPassword().isEmpty()) {
+            user.setPassword(userFromDb.getPassword());
+        }
         validateUser(user);
         userRepository.save(user);
     }
