@@ -31,8 +31,14 @@ public class AdminRestController {
     }
 
     @GetMapping("/getUser/{id}")
-    public ResponseEntity<User> getCurrentUser(@PathVariable("id") int id) throws ValidationException {
+    public ResponseEntity<User> getUser(@PathVariable("id") int id) throws ValidationException {
         User user = userService.findById(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @GetMapping("/getCurrentUser")
+    public ResponseEntity<User> getCurrentUser() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 

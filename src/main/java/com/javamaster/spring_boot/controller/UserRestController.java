@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@AllArgsConstructor
 public class UserRestController {
 
-    private final UserService userService;
 
     @GetMapping("/userInfo")
     public ResponseEntity<User> userInfo() {

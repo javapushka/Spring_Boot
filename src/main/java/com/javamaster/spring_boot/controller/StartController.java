@@ -5,12 +5,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/admin")
-public class JustController {
+@RequestMapping()
+public class StartController {
 
-    @GetMapping()
-    public String getIndex() {
-        return "index";
+    @GetMapping("/admin")
+    public String getAdmin() {
+        return "admin/adminPage";
     }
 
+
+    @GetMapping("/user")
+    public String getUser() {
+        return "user/userPage";
+    }
 }
